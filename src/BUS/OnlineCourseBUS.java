@@ -68,14 +68,5 @@ public class OnlineCourseBUS implements iBUS<OnlineCourseDTO> {
 	public List<OnlineCourseDTO> findByCourseID(String condition) {
 		return OlDAO.findByCourseID(condition);
 	}
-	public int getNewestId() {
-		int id=0;
-		for (OnlineCourseDTO item : findAll()) {
-			int newId=item.getId();
-            if (newId > id) {
-                id = newId;
-            }
-		}
-		return id+1;
-	}
+	
 }

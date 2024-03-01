@@ -20,7 +20,7 @@ public class CourseBUS implements iBUS<courseDTO> {
 	@Override
 	public List<courseDTO> findAll() {
 		// TODO Auto-generated method stub
-		return null;
+		return cDAO.findAll();
 	}
 
 	@Override
@@ -42,6 +42,16 @@ public class CourseBUS implements iBUS<courseDTO> {
 		if(result==0) return "Thay đổi không thành công";
 		if(result==1) return "Thay đổi thành công";
 		return "Mã không được tìm thấy";
+	}
+	public int getNewestId() {
+		int id=0;
+		for (courseDTO item : findAll()) {
+			int newId=item.getId();
+            if (newId > id) {
+                id = newId;
+            }
+		}
+		return id+1;
 	}
 	
 }

@@ -26,17 +26,28 @@ public class KetQuaBUS {
 	public String getTeacherNameByCourseId(int courseId) {
 		return KetQuaDAO.getInstance().getTeacherNameByCourseId(courseId);
 	}
-	public int updateGrade(int grade, int courseid, int studentid) {
+	public int updateGrade(int grade, int courseid, String fullname) {
+		int studentid=getIdbyFullName(fullname);
 		int check=KetQuaDAO.getInstance().updateGrade(grade, courseid, studentid);
 		if(check==0) {
 			new ThongBaoDialog("Cập nhật thất bại", ThongBaoDialog.ERROR_DIALOG);
 			return 0;
 		}
-		else {
-			new ThongBaoDialog("Cập nhật dữ liệu thành công", ThongBaoDialog.SUCCESS_DIALOG);
+		return check;
+	}
+	public int cancel(int courseid, String fullname) {
+		new ThongBaoDialog("Hủy kết quả của "+fullname, ThongBaoDialog.WARNING_DIALOG);
+		if(ThongBaoDialog.action==ThongBaoDialog.CANCEL_OPTION) {
+			return 0;
+		}
+		int studentid=getIdbyFullName(fullname);
+		int check = KetQuaDAO.getInstance().cancel(courseid, studentid);
+		if(check!=0) {
+			new ThongBaoDialog("Thành công", ThongBaoDialog.SUCCESS_DIALOG);
 		}
 		return check;
 	}
+	
 	public int delete(int courseid, String fullName) {
 		int studentid= getIdbyFullName(fullName);
 		int check =KetQuaDAO.getInstance().delete(courseid, studentid);

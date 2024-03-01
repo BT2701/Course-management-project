@@ -1,5 +1,6 @@
 package GUI.GUI_ONLINECOURSE;
 
+import BUS.CourseBUS;
 import BUS.DepartmentBUS;
 import java.awt.BorderLayout;
 import javax.swing.event.DocumentEvent;
@@ -55,6 +56,7 @@ import javax.swing.JTextArea;
 public class OnlineCourseGUI extends JPanel {
 	OnlineCourseBUS olBUS = new OnlineCourseBUS();
 	DepartmentBUS depBUS = new DepartmentBUS();
+	CourseBUS coursebus=new CourseBUS();
 //	private Font fontSubTittle = new Font("Tahoma", Font.BOLD, 20);
 	private Font fontbtn = new Font("Tahoma", Font.PLAIN, 13);
 //	private Font fontTable = new Font("Segoe UI", Font.BOLD, 13);
@@ -145,7 +147,7 @@ public class OnlineCourseGUI extends JPanel {
 				txtid.setEditable(false);
 				txtid.setBorder(BorderFactory.createCompoundBorder(borderTxt, new EmptyBorder(0, 3, 0, 3)));
 				txtid.setForeground(Color.black);
-				txtid.setText(olBUS.getNewestId()+"");
+				txtid.setText(coursebus.getNewestId()+"");
 
 				pnID.add(lbid);
 				pnID.add(txtid);

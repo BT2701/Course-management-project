@@ -3,6 +3,7 @@ package DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import DTO.OnlineCourseDTO;
@@ -80,8 +81,22 @@ public class CourseDAO implements iDAO<courseDTO>{
 
 	@Override
 	public List<courseDTO> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<courseDTO> list = new ArrayList();
+        try (Connection conn = db.getConnection()) {
+            String query = "SELECT * from Course";
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+            	courseDTO c=new courseDTO();
+            	c.setId(rs.getInt(1));
+            	c.setTittle(rs.getString(2));
+            	c.setCredits(rs.getInt(3));
+                list.add(c);
+            }
+            return list;
+        } catch (Exception e) {
+            return null;
+        }
 	}
 
 	@Override

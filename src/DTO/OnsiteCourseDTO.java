@@ -5,8 +5,8 @@ import java.util.Date;
 public class OnsiteCourseDTO extends courseDTO{
 	private String location;
 	private String days;
-	private Date time;
-	public OnsiteCourseDTO(int id, String tittle, int credits, int maKhoa,String location, String days, Date time) {
+	private String time;
+	public OnsiteCourseDTO(int id, String tittle, int credits, int maKhoa,String location, String days, String time) {
 		super( id,  tittle,  credits,  maKhoa);
 		this.location = location;
 		this.days = days;
@@ -27,10 +27,10 @@ public class OnsiteCourseDTO extends courseDTO{
 	public void setDays(String days) {
 		this.days = days;
 	}
-	public Date getTime() {
+	public String getTime() {
 		return time;
 	}
-	public void setTime(Date time) {
+	public void setTime(String time) {
 		this.time = time;
 	}
 	

@@ -41,7 +41,7 @@ public class OnsiteCourseDaoImpl implements OnsiteCourseDAO {
                 onsiteCourse.setTittle(rs.getString("course.Title"));
                 onsiteCourse.setMaKhoa(rs.getInt("course.DepartmentID"));
                 onsiteCourse.setDays(rs.getString("onsitecourse.Days"));
-                onsiteCourse.setTime(rs.getDate("onsitecourse.Time"));
+                onsiteCourse.setTime(rs.getString("onsitecourse.Time"));
                 onsiteCourse.setLocation(rs.getString("onsitecourse.Location"));
                 onsiteCourse.setCredits(rs.getInt("course.Credits"));
                 list.add(onsiteCourse);

@@ -61,6 +61,12 @@ public class courseDTO {
     public void setDepartmentName(DepartmentDTO departmentName) {
         this.departmentName = departmentName;
     }
+
+	@Override
+	public String toString() {
+		return "courseDTO [id=" + id + ", tittle=" + tittle + ", credits=" + credits + ", maKhoa=" + maKhoa
+				+ ", departmentName=" + departmentName + ", depBUS=" + depBUS + "]";
+	}
         
 	
 	

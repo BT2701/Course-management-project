@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 public class PhanCongGUI extends JPanel {
     Color primaryColor = Color.decode("#dee9fc");
     private JTable table;
+    JButton showDetailButton;
     JButton addButton;
     JButton editButton;
     JButton deleteButton;
@@ -162,8 +163,18 @@ public class PhanCongGUI extends JPanel {
         deleteButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         deleteButton.addActionListener(new DeleteButtonListener());
 
+        showDetailButton = new JButton("Xem chi tiết");
+        showDetailButton.setFont(buttonFont);
+        showDetailButton.setBackground(Color.decode("#ebf2fc"));
+        showDetailButton.setForeground(Color.BLACK);
+        showDetailButton.setHorizontalTextPosition(SwingConstants.LEADING); // Chuyển icon ra sau text
+        showDetailButton.setBorder(new EmptyBorder(8, 12, 8, 12));
+        showDetailButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        showDetailButton.addActionListener(new ShowDetailButtonListener());
+
         JPanel buttonPn = new JPanel();
         buttonPn.setBackground(Color.WHITE);
+        buttonPn.add(showDetailButton);
         buttonPn.add(addButton);
         buttonPn.add(editButton);
         buttonPn.add(deleteButton);
@@ -283,6 +294,27 @@ public class PhanCongGUI extends JPanel {
         return searchPn;
     }
     // Xử lý sự kiện khi JButton được nhấn
+    private class ShowDetailButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = table.getSelectedRow();
+            String personID = "";
+            String courseID = "";
+
+            if (selectedRow != -1) { // Kiểm tra dòng được chọn
+                personID = table.getValueAt(selectedRow, 0).toString();
+                courseID = table.getValueAt(selectedRow, 2).toString();
+
+                oldPc = new PhanCongDTO(Integer.parseInt(personID), Integer.parseInt(courseID));
+            }
+
+            if (personID.equals("") || courseID.equals("")) {
+                JOptionPane.showMessageDialog(PhanCongGUI.this,"Vui lòng chọn thông tin cần hiển thị chi tiết");
+                return;
+            }
+
+            showDetailDialog();
+        }
+    }
     private class AddButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
            showAddDialog();
@@ -350,9 +382,86 @@ public class PhanCongGUI extends JPanel {
             }
         }
     }
+    private void showDetailDialog() {
+        JDialog editDialog = new JDialog((Frame)SwingUtilities.getWindowAncestor(PhanCongGUI.this), "Sửa Phân Công");
+        editDialog.setSize(400, 220);
+        editDialog.setLocationRelativeTo(null); // Đặt JDialog ở giữa màn hình
+
+        Font textFieldFont = new Font("Segoe UI", Font.BOLD, 13);
+        JTextField personInput = new JTextField("");
+        personInput.setPreferredSize(new Dimension(200, 30));
+        setBorderForJTextField(personInput);
+        personInput.setFont(textFieldFont);
+        personInput.setEditable(false);
+
+        JTextField courseInput = new JTextField("");
+        courseInput.setPreferredSize(new Dimension(200, 30));
+        setBorderForJTextField(courseInput);
+        courseInput.setFont(textFieldFont);
+        courseInput.setEditable(false);
+
+        // lấy dữ liệu từ dòng cần hiển thị ra combobox
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow != -1) {
+            // Kiểm tra dòng được chọn
+            String personID = table.getValueAt(selectedRow, 0).toString();
+            String pernameName = table.getValueAt(selectedRow, 1).toString();
+            String courseID = table.getValueAt(selectedRow, 2).toString();
+            String courseTitle = table.getValueAt(selectedRow, 3).toString();
+
+            // để edit
+            oldPc = new PhanCongDTO(Integer.parseInt(courseID), Integer.parseInt(personID));
+
+            personInput.setText(personID + "-" + pernameName);
+            courseInput.setText(courseID + "-" + courseTitle);
+        }
+
+        JPanel teacherPn = new JPanel();
+        JPanel subjectPn = new JPanel();
+        teacherPn.setBackground(Color.WHITE);
+        subjectPn.setBackground(Color.WHITE);
+        teacherPn.add(ceateStyleJLabel(new JLabel("Giảng viên")));
+        teacherPn.add(personInput);
+        subjectPn.add(ceateStyleJLabel(new JLabel(" Môn học  ")));
+        subjectPn.add(courseInput);
+
+        JButton cancelButton = new JButton("Đóng");
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editDialog.dispose();
+            }
+        });
+
+        cancelButton.setFont(buttonFont);
+        cancelButton.setForeground(Color.BLACK);
+        cancelButton.setBackground(Color.decode("#ebf2fc"));
+        cancelButton.setHorizontalTextPosition(SwingConstants.LEADING); // Chuyển icon ra sau text
+        cancelButton.setBorder(new EmptyBorder(8, 12, 8, 12));
+        cancelButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        JPanel formPanel = new JPanel();
+        formPanel.setBackground(Color.WHITE);
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+
+        JLabel format = new JLabel("*Theo định dạng \"ID-Tên\"");
+        formPanel.add(format);
+        formPanel.add(teacherPn);
+        formPanel.add(subjectPn);
+        formPanel.setBorder(new EmptyBorder(25,25,25,25));
+
+        JPanel buttonPn = new JPanel();
+        buttonPn.setBackground(Color.WHITE);
+        buttonPn.add(cancelButton);
+        formPanel.add(buttonPn);
+
+        editDialog.add(formPanel);
+
+        editDialog.setVisible(true);
+    }
     private void showAddDialog() {
         JDialog addDialog = new JDialog((Frame)SwingUtilities.getWindowAncestor(PhanCongGUI.this), "Thêm Phân Công");
-        addDialog.setSize(400, 200);
+        addDialog.setSize(400, 240);
         addDialog.setLocationRelativeTo(null); // Đặt JDialog ở giữa màn hình
 
         ArrayList<courseDTO> courseLst = (ArrayList<courseDTO>) PhanCongDAO.getAllCourse();
@@ -448,6 +557,12 @@ public class PhanCongGUI extends JPanel {
         JPanel formPanel = new JPanel();
         formPanel.setBackground(Color.WHITE);
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+
+        JLabel format = new JLabel("*Theo định dạng \"ID-Tên\"");
+        JPanel formatPN = new JPanel();
+        formatPN.setBackground(Color.WHITE);
+        formatPN.add(format);
+        formPanel.add(formatPN);
         formPanel.add(teacherPn);
         formPanel.add(subjectPn);
         formPanel.setBorder(new EmptyBorder(25,25,25,25));
@@ -464,7 +579,7 @@ public class PhanCongGUI extends JPanel {
     }
     private void showEditDialog() {
         JDialog editDialog = new JDialog((Frame)SwingUtilities.getWindowAncestor(PhanCongGUI.this), "Sửa Phân Công");
-        editDialog.setSize(400, 200);
+        editDialog.setSize(400, 240);
         editDialog.setLocationRelativeTo(null); // Đặt JDialog ở giữa màn hình
 
         ArrayList<courseDTO> courseLst = (ArrayList<courseDTO>) PhanCongDAO.getAllCourse();
@@ -583,6 +698,12 @@ public class PhanCongGUI extends JPanel {
         JPanel formPanel = new JPanel();
         formPanel.setBackground(Color.WHITE);
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+
+        JLabel format = new JLabel("*Theo định dạng \"ID-Tên\"");
+        JPanel formatPN = new JPanel();
+        formatPN.setBackground(Color.WHITE);
+        formatPN.add(format);
+        formPanel.add(formatPN);
         formPanel.add(teacherPn);
         formPanel.add(subjectPn);
         formPanel.setBorder(new EmptyBorder(25,25,25,25));

@@ -292,5 +292,34 @@ public class KetQuaDAO implements DaoInterface<KetQuaDTO>{
         }
         return check;
 	}
+	public int cancel(int courseid, int studentid) {
+		int check = 0;
+        try {
+            Connection con = new ConnectDB().getConnection();
+            Statement st = con.createStatement();
+            //maHD,maCTT,tienP,tienDV,giamGia,phuThu,tongTien,ngayThanhToan,phuongThucThanhToan,xuLy
+            String sql = "UPDATE studentgrade SET grade = NULL WHERE courseid = ? and studentid= ?";
+            PreparedStatement prep = con.prepareStatement(sql);
+            prep.setInt(1, courseid);
+            prep.setFloat(2, studentid);
+            check = prep.executeUpdate();
+            if (check > 0) {
+                System.out.println("thêm dữ liệu thành công");
+            } else {
+                System.out.println("thất bại 8987");
+            }
+            System.out.println("ban da thucc thi: " + sql);
+            System.out.println("so dong thay doi: " + check);
+
+            //buoc 5 ngat ket noi
+            con.close();
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("thất bại");
+            e.printStackTrace();
+        }
+        return check;
+	}
+	
 
 }
