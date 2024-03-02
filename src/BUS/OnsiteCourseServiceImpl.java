@@ -4,7 +4,7 @@
  */
 package BUS;
 
-import DAO.OnsiteCourseDAO;
+import DAO.OnsiteCourseDAO1;
 import DAO.OnsiteCourseDaoImpl;
 import DTO.OnsiteCourseDTO;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
  * @author Admin
  */
 public class OnsiteCourseServiceImpl implements OnsiteCourseService{
-    private OnsiteCourseDAO onsiteCourseDao = null;
+    private OnsiteCourseDAO1 onsiteCourseDao = null;
 
     public OnsiteCourseServiceImpl() {
         onsiteCourseDao = new OnsiteCourseDaoImpl();

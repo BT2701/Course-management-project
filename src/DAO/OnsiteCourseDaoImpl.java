@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author Admin
  */
-public class OnsiteCourseDaoImpl implements OnsiteCourseDAO {
+public class OnsiteCourseDaoImpl implements OnsiteCourseDAO1 {
     
     @Override
     public List<OnsiteCourseDTO> getList() {
@@ -56,7 +56,7 @@ public class OnsiteCourseDaoImpl implements OnsiteCourseDAO {
         return null;
     }
     public static void main(String[] args) {
-        OnsiteCourseDAO onsiteCourseDao = new OnsiteCourseDaoImpl();
+        OnsiteCourseDAO1 onsiteCourseDao = new OnsiteCourseDaoImpl();
         System.out.println(onsiteCourseDao.getList());
     }
 }

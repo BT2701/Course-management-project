@@ -660,6 +660,10 @@ public class PhanCongGUI extends JPanel {
                         JOptionPane.showMessageDialog(PhanCongGUI.this,"Vui lòng thay đổi thông tin cần sửa");
                         return;
                     }
+                    if(phanCongBUS.hasPhanCong(newPC)) {
+                        JOptionPane.showMessageDialog(PhanCongGUI.this,"Phân công đã tồn tai");
+                        return;
+                    }
                     JOptionPane.showMessageDialog(PhanCongGUI.this, phanCongBUS.editPhanCong(newPC, oldPc));
 
                     ArrayList<PhanCongDTO> newPcLst = (ArrayList<PhanCongDTO>) phanCongBUS.getAllPhanCong();

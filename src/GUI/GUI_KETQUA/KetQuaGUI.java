@@ -62,7 +62,7 @@ public class KetQuaGUI extends JPanel {
 			pnContainerOfContentRight, pnNotification, pnCenterContent, pnContainerOfContentRightTittle;
 	private InformationFORM pnCenterInfor;
 	private JLabel lbTittle, lbNotification, lbTittleOfSearch;
-	private JButton btnSearch, btnAdd, btnDelete, btnUpdate, btnRefresh,btnCancel;
+	private JButton btnSearch, btnAdd, btnDelete, btnUpdate, btnRefresh, btnCancel;
 //	private JComboBox<String> cbbSortContent;
 	private JTextField tfSearch;
 	private JTable tbMain;
@@ -148,8 +148,8 @@ public class KetQuaGUI extends JPanel {
 		btnDelete = new JButton("Xóa");
 
 		btnUpdate = new JButton("Sửa Điểm");
-		
-		btnCancel=new JButton("Hủy Điểm");
+
+		btnCancel = new JButton("Hủy Điểm");
 
 //		NOTIFICATION PANEL
 		pnNotification = new JPanel();
@@ -275,13 +275,13 @@ public class KetQuaGUI extends JPanel {
 		btnAdd.setFocusPainted(false);
 		btnAdd.setBorderPainted(false);
 
-		ImageIcon cancelIcon = new ImageIcon(new ImageIcon(getClass().getResource("/GUI/assets/cancel-144.png")).getImage()
-				.getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+		ImageIcon cancelIcon = new ImageIcon(new ImageIcon(getClass().getResource("/GUI/assets/cancel-144.png"))
+				.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 		btnCancel.setIcon(cancelIcon);
 		btnCancel.setFont(sgUI13b);
 		btnCancel.setFocusPainted(false);
 		btnCancel.setBorderPainted(false);
-		
+
 		ImageIcon delIcon = new ImageIcon(new ImageIcon(getClass().getResource("/GUI/assets/btnDel.png")).getImage()
 				.getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 		btnDelete.setIcon(delIcon);
@@ -439,7 +439,7 @@ public class KetQuaGUI extends JPanel {
 						numOfStudent++;
 					}
 				}
-				if(numOfStudent<1) {
+				if (numOfStudent < 1) {
 					new ThongBaoDialog("Không có sinh viên chưa nhập điểm", ThongBaoDialog.INFO_DIALOG);
 					return;
 				}
@@ -463,13 +463,13 @@ public class KetQuaGUI extends JPanel {
 				for (int i = 0; i < tbMain.getRowCount(); i++) {
 					String cou = tbMain.getValueAt(i, 0).toString() + " - " + tbMain.getValueAt(i, 1).toString();
 					String stu = tbMain.getValueAt(i, 2).toString();
-					float gra=Float.parseFloat(tbMain.getValueAt(i, 3).toString());
+					float gra = Float.parseFloat(tbMain.getValueAt(i, 3).toString());
 					courses.add(cou);
 					students.add(stu);
 					grades.add(gra);
 					numOfStudent++;
 				}
-				new AddOrUpdateForm(numOfStudent, courses, students,grades);
+				new AddOrUpdateForm(numOfStudent, courses, students, grades);
 				renderData(tbMain);
 			}
 		});
@@ -529,24 +529,26 @@ public class KetQuaGUI extends JPanel {
 			renderData(tbMain);
 		});
 	}
+
 	public void eventCancel() {
 		btnCancel.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				int row=tbMain.getSelectedRow();
-				if(row<0) {
+				int row = tbMain.getSelectedRow();
+				if (row < 0) {
 					new ThongBaoDialog("Chọn sinh viên", ThongBaoDialog.INFO_DIALOG);
 					return;
 				}
-				int courseid=Integer.parseInt(tbMain.getValueAt(row, 0).toString());
-				String fullname=tbMain.getValueAt(row, 2).toString();
+				int courseid = Integer.parseInt(tbMain.getValueAt(row, 0).toString());
+				String fullname = tbMain.getValueAt(row, 2).toString();
 				KetQuaBUS.getInstance().cancel(courseid, fullname);
 				renderData(tbMain);
 			}
 		});
 	}
+
 	public void eventRefresh() {
 
 	}

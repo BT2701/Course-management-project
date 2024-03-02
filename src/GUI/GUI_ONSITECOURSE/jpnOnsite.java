@@ -5,8 +5,7 @@
 package GUI.GUI_ONSITECOURSE;
 
 import BUS.CourseBUS;
-import BUS.OnsiteCourseService;
-import BUS.OnsiteCourseServiceImpl;
+import BUS.OnsiteCourseBUS;
 import DAO.ConnectDB;
 import DTO.KhoaDTO;
 import DTO.OnsiteCourseDTO;
@@ -78,9 +77,9 @@ public class jpnOnsite extends javax.swing.JPanel {
 	EmptyBorder emptyBorderTxt = new EmptyBorder(0, 7, 0, 7);
 	EmptyBorder emptyBorderCB = new EmptyBorder(0, 7, 0, 0);
 
-	CourseBUS coursebus=new CourseBUS();
-
-    OnsiteCourseDTO onsite = new OnsiteCourseDTO();
+	CourseBUS coursebus = new CourseBUS();
+        OnsiteCourseDTO onsite = new OnsiteCourseDTO();
+        OnsiteCourseBUS onsiteBUS = new OnsiteCourseBUS();
 
     /**
      * Creates new form QLOnsite
@@ -91,8 +90,8 @@ public class jpnOnsite extends javax.swing.JPanel {
     }
     
     public void showTable() {
-        OnsiteCourseService onsiteCourseService = new OnsiteCourseServiceImpl();
-        List<OnsiteCourseDTO> list = onsiteCourseService.getList();
+        OnsiteCourseBUS onsiteBUS = new OnsiteCourseBUS();
+        List<OnsiteCourseDTO> list = onsiteBUS.findAll();
         
         DefaultTableModel dtm = new DefaultTableModel() {
             @Override
@@ -127,7 +126,6 @@ public class jpnOnsite extends javax.swing.JPanel {
             }
 
             @Override
-            
             public void changedUpdate(DocumentEvent e) {
             }
         });
@@ -263,39 +261,24 @@ public class jpnOnsite extends javax.swing.JPanel {
             filters.add(RowFilter.regexFilter("(?i)" + text));
         }
 
-
         RowFilter<Object, Object> combinedFilter = RowFilter.andFilter(filters);
         rowSorter.setRowFilter(combinedFilter);
     }
 
     
-    public void reset() {
+    public void refresh() {
         jtfSearch.setText("");
+        onsite.setId(0);
+        onsiteTable.clearSelection();
 //        showTable();
     }
     
     public boolean ktNhapDayDu() {
-        if(jtfId.getText() == null ||
-            jtfTenMonHoc.getText() == null ||
-            jtfDiaDiem.getText() == null ||
-            jtfSoTinChi.getText() == null) {
+        if(jtfTenMonHoc.getText().isEmpty() || jtfDiaDiem.getText().isEmpty() || jtfSoTinChi.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Bạn nhập thiếu thông tin", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
         return true;        
-    }
-    
-    public boolean ktID() {
-        OnsiteCourseService onsiteService = new OnsiteCourseServiceImpl();
-        List<OnsiteCourseDTO> list = onsiteService.getList();
-        
-        for(OnsiteCourseDTO os: list) {
-            if(jtfId.getText().equals(String.valueOf(os.getId()))) {
-                return false;
-            }    
-        }
-        
-        return true;
     }
     
     public String ngayHoc() {
@@ -329,125 +312,6 @@ public class jpnOnsite extends javax.swing.JPanel {
         return time;
     }
     
-    public void insert(){
-        if(ktNhapDayDu())
-        if(ktID())
-            try {
-                Connection cons = ConnectDB.getConnection();
-                String sql1 = "INSERT INTO course (CourseID, Title, Credits, DepartmentID) VALUES (?, ?, ?, ?)";
-                PreparedStatement ps1 = cons.prepareStatement(sql1);
-                
-                ps1.setString(1, jtfId.getText());
-                ps1.setString(2, jtfTenMonHoc.getText());
-                ps1.setString(3, jtfSoTinChi.getText());
-                ps1.setString(4, (String) jcbMaKhoa.getSelectedItem());
-                
-                ps1.executeUpdate();
-
-                ps1.close();
-                
-                String sql = "INSERT INTO onsitecourse (CourseID, Location, Days, Time) VALUES (?, ?, ?, ?)";
-                PreparedStatement ps = cons.prepareStatement(sql);
-
-                ps.setString(1, jtfId.getText());
-                ps.setString(2, jtfDiaDiem.getText());
-                String days = ngayHoc();
-                ps.setString(3, days);
-                String time = thoiGianHoc();
-                ps.setString(4, time);
-
-                int rowsAffected = ps.executeUpdate();
-                if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(this, "Thêm thông tin thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    showTable();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Thêm thông tin không thành công", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
-
-                ps.close();
-                cons.close();
-                showTable();
-                jdlThemSua.setVisible(false);
-            } catch (SQLException ex) {
-                ex.printStackTrace(); // In ra thông tin chi tiết của lỗi
-                JOptionPane.showMessageDialog(this, "Lỗi khi thêm thông tin", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            }
-
-        else JOptionPane.showMessageDialog(this, "Đã có ID trong dữ liệu", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-    }
-    
-    public void delete() {
-        
-            try {
-                Connection cons = ConnectDB.getConnection();
-                int id = onsite.getId();
-                
-                // Xóa khóa học từ bảng 'onsitecourse'
-                String sql1 = "DELETE FROM onsitecourse WHERE CourseID = ?";
-                PreparedStatement ps1 = cons.prepareStatement(sql1);
-                ps1.setInt(1, id);
-                ps1.executeUpdate();
-                ps1.close();
-
-                // Xóa khóa học từ bảng 'course'
-                String sql = "DELETE FROM course WHERE CourseID = ?";
-                PreparedStatement ps = cons.prepareStatement(sql);
-                ps.setInt(1, id);
-                ps.executeUpdate();
-                ps.close();
-
-                cons.close();
-                JOptionPane.showMessageDialog(this, "Xóa thông tin thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                showTable();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-
-    }
-    
-    public void update() {
-        if(ktNhapDayDu())
-        if(ktID())
-            JOptionPane.showMessageDialog(this, "Không có ID khóa học trong dữ liệu", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        else    
-            try {
-                Connection cons = ConnectDB.getConnection();
-                String id = jtfId.getText();
-                String sql1 = "Update course set CourseID = ?, Title = ?, Credits = ?, DepartmentID = ? where CourseID = '" + id + "'";
-                PreparedStatement ps1 = cons.prepareStatement(sql1);
-
-                ps1.setString(1, jtfId.getText());
-                ps1.setString(2, jtfTenMonHoc.getText());
-                ps1.setString(3, jtfSoTinChi.getText());
-                ps1.setString(4, (String) jcbMaKhoa.getSelectedItem());
-
-                ps1.executeUpdate();
-
-                ps1.close();
-                
-                String sql = "Update onsitecourse set CourseID = ?, Location = ?, Days = ?, Time = ? where CourseID = '" + id + "'";
-                PreparedStatement ps = cons.prepareStatement(sql);
-
-                ps.setString(1, jtfId.getText());
-                ps.setString(2, jtfDiaDiem.getText());
-                String days = ngayHoc();
-                ps.setString(3, days);
-                String time = thoiGianHoc();
-                ps.setString(4, time);
-
-                ps.executeUpdate();
-
-                ps.close();
-                cons.close();
-                JOptionPane.showMessageDialog(this, "Sửa thông tin thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                showTable();
-                jdlThemSua.setVisible(false);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-    
-    }
-    
     public void setValueJcbMaKhoa() {
 
         try {
@@ -472,6 +336,23 @@ public class jpnOnsite extends javax.swing.JPanel {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public void resetJdlThemSua() {
+        jtfId.setText(coursebus.getNewestId()+"");
+        jtfTenMonHoc.setText("");
+        setValueJcbMaKhoa();
+        jcbThu2.setSelected(false);
+        jcbThu3.setSelected(false);
+        jcbThu4.setSelected(false);
+        jcbThu5.setSelected(false);
+        jcbThu6.setSelected(false);
+        jcbThu7.setSelected(false);
+        jcbChuNhat.setSelected(false);
+        jspGio.setValue(0);
+        jspPhut.setValue(0);
+        jtfDiaDiem.setText("");
+        jtfSoTinChi.setText("");
     }
 
     /**
@@ -571,12 +452,17 @@ public class jpnOnsite extends javax.swing.JPanel {
 
         jPanel15.setBackground(new java.awt.Color(255, 255, 255));
         jPanel15.setLayout(new java.awt.GridBagLayout());
+        java.awt.GridBagLayout jPanel15Layout = new java.awt.GridBagLayout();
+        jPanel15Layout.columnWidths = new int[] {0, 20, 0, 20, 0};
+        jPanel15Layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
+        jPanel15.setLayout(jPanel15Layout);
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel12.setText("Tên khóa học");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jLabel12, gridBagConstraints);
 
         jlbTenKhoaHoc.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -584,6 +470,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jlbTenKhoaHoc, gridBagConstraints);
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -591,6 +478,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jLabel14, gridBagConstraints);
 
         jlbTenKhoa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -598,6 +486,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jlbTenKhoa, gridBagConstraints);
 
         jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -605,6 +494,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jLabel16, gridBagConstraints);
 
         jlbTenGiaoVien.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -612,6 +502,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jlbTenGiaoVien, gridBagConstraints);
 
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -619,6 +510,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jLabel18, gridBagConstraints);
 
         jlbNgayHoc.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -626,6 +518,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jlbNgayHoc, gridBagConstraints);
 
         jLabel20.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -633,6 +526,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jLabel20, gridBagConstraints);
 
         jlbThoiGian.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -640,6 +534,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 8;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jlbThoiGian, gridBagConstraints);
 
         jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -647,6 +542,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jLabel22, gridBagConstraints);
 
         jlbSoTinChi.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -654,6 +550,7 @@ public class jpnOnsite extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         jPanel15.add(jlbSoTinChi, gridBagConstraints);
 
         jPanel12.add(jPanel15);
@@ -838,7 +735,6 @@ public class jpnOnsite extends javax.swing.JPanel {
         jPanel8.add(jLabel24, gridBagConstraints);
 
         jtfId.setPreferredSize(new java.awt.Dimension(200, 30));
-        jtfId.setText(coursebus.getNewestId()+"");
         jtfId.setEditable(false);
         jtfId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1069,7 +965,7 @@ public class jpnOnsite extends javax.swing.JPanel {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-        setValueJcbMaKhoa();
+        resetJdlThemSua();
         jdlThemSua.setLocationRelativeTo(null);
         jdlThemSua.setVisible(true);
     }//GEN-LAST:event_btnAddActionPerformed
@@ -1101,12 +997,43 @@ public class jpnOnsite extends javax.swing.JPanel {
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
-        insert();
+//        insert();
+        if(ktNhapDayDu()) {
+            int id = Integer.parseInt(jtfId.getText());
+            String title = jtfTenMonHoc.getText();
+            int credits = Integer.parseInt(jtfSoTinChi.getText());
+            int maKhoa = Integer.parseInt((String) jcbMaKhoa.getSelectedItem());
+            String location = jtfDiaDiem.getText();
+            String days = ngayHoc();
+            String time = thoiGianHoc();
+
+            OnsiteCourseDTO onsite = new OnsiteCourseDTO(id, title, credits, maKhoa, location, days, time);
+            System.out.println(onsite);
+            JOptionPane.showMessageDialog(this, onsiteBUS.insert(onsite), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            showTable();
+            jdlThemSua.setVisible(false);  
+            onsite.setId(0);
+        }
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
         // TODO add your handling code here:
-        update();
+        if(ktNhapDayDu()) {
+            int id = Integer.parseInt(jtfId.getText());
+            String title = jtfTenMonHoc.getText();
+            int credits = Integer.parseInt(jtfSoTinChi.getText());
+            int maKhoa = Integer.parseInt((String) jcbMaKhoa.getSelectedItem());
+            String location = jtfDiaDiem.getText();
+            String days = ngayHoc();
+            String time = thoiGianHoc();
+
+            OnsiteCourseDTO onsiteDTO = new OnsiteCourseDTO(id, title, credits, maKhoa, location, days, time);
+            System.out.println(onsite);
+            JOptionPane.showMessageDialog(this, onsiteBUS.update(onsiteDTO), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            showTable();
+            jdlThemSua.setVisible(false);
+            onsite.setId(0);
+        }
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnThoatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThoatActionPerformed
@@ -1121,8 +1048,9 @@ public class jpnOnsite extends javax.swing.JPanel {
         else {
             int option = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn xóa không?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {
-                // Xử lý xóa dữ liệu ở đây
-                delete();
+                JOptionPane.showMessageDialog(this, onsiteBUS.delete(onsite), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                showTable();
+                onsite.setId(0);
             }
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
@@ -1133,7 +1061,7 @@ public class jpnOnsite extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Bạn vui lòng chọn khóa học cần sửa", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         }
         else {
-            setValueJcbMaKhoa();
+            resetJdlThemSua();
             jtfId.setText(String.valueOf(onsite.getId()));
             jtfTenMonHoc.setText(onsite.getTittle());
             jcbMaKhoa.setSelectedItem(String.valueOf(onsite.getMaKhoa()));
@@ -1179,7 +1107,7 @@ public class jpnOnsite extends javax.swing.JPanel {
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
         // TODO add your handling code here:
-        reset();
+        refresh();
     }//GEN-LAST:event_btnResetActionPerformed
 
 

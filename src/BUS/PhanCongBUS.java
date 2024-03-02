@@ -26,6 +26,10 @@ public class PhanCongBUS {
 		return phanCongDAO.getAllPhanCongAfterSortingByCourseID();
 	}
 
+	public boolean hasPhanCong(PhanCongDTO pDto) {
+        return phanCongDAO.hasPhanCong(pDto.getPersonId(), pDto.getCourseId());
+    }
+
 	public String addPhanCong(PhanCongDTO pDto) {
 		if (phanCongDAO.hasPhanCong(pDto.getPersonId(), pDto.getCourseId()))
 			return "Phân công đã tồn tại";
