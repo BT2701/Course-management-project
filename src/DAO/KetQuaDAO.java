@@ -321,5 +321,27 @@ public class KetQuaDAO implements DaoInterface<KetQuaDTO>{
         return check;
 	}
 	
+	public ArrayList<Float> getListGrade(){
+		ArrayList<Float> list=new ArrayList<>();
+		try {
+            //maHD,maCTT,tienP,tienDV,giamGia,phuThu,tongTien,ngayThanhToan,phuongThucThanhToan,xuLy
+            Connection con = new ConnectDB().getConnection();
+            String sql = "SELECT Grade FROM studentgrade";
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+            	list.add(rs.getFloat(1));
+            }
+            con.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+
+        }
+		
+		return list;
+		
+	}
+	
 
 }

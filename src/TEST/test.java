@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import BUS.CourseBUS;
 import BUS.OnlineCourseBUS;
 import DAO.CourseDAO;
+import DAO.KetQuaDAO;
 import DTO.courseDTO;
 import GUI.GUI_KETQUA.AddEditFORM;
 import GUI.GUI_KETQUA.AddOrUpdateForm;
+import GUI.GUI_KETQUA.ThongKeFORM;
 
 public class test {
 	public static void main(String[] args) {
@@ -23,7 +25,12 @@ public class test {
 //			c.add(Float.parseFloat("1"));
 //		}
 //		new AddOrUpdateForm(10, a, b,c);
-		CourseBUS a=new CourseBUS();
-		System.out.println(a.getNewestId());
+//		CourseBUS a=new CourseBUS();
+//		System.out.println(a.getNewestId());
+		
+		new ThongKeFORM();
+//		for (float string : KetQuaDAO.getInstance().getListGrade()) {
+//			System.out.println(string);
+//		}
 	}
 }

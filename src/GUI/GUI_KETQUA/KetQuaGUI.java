@@ -62,7 +62,7 @@ public class KetQuaGUI extends JPanel {
 			pnContainerOfContentRight, pnNotification, pnCenterContent, pnContainerOfContentRightTittle;
 	private InformationFORM pnCenterInfor;
 	private JLabel lbTittle, lbNotification, lbTittleOfSearch;
-	private JButton btnSearch, btnAdd, btnDelete, btnUpdate, btnRefresh, btnCancel;
+	private JButton btnSearch, btnAdd, btnDelete, btnUpdate, btnRefresh, btnCancel,btnThongKe;
 //	private JComboBox<String> cbbSortContent;
 	private JTextField tfSearch;
 	private JTable tbMain;
@@ -114,6 +114,8 @@ public class KetQuaGUI extends JPanel {
 		tfSearch = new JTextField();
 
 		btnSearch = new JButton("Tìm Kiếm");
+		
+		btnThongKe=new JButton("Thống Kê");
 
 		tbMain = new JTable();
 		scrMain = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -223,6 +225,7 @@ public class KetQuaGUI extends JPanel {
 		pnSouth.add(btnUpdate);
 		pnSouth.add(btnCancel);
 		pnSouth.add(btnDelete);
+		pnSouth.add(btnThongKe);
 
 //		THE BIGGEST PANEL
 		this.setLayout(new BorderLayout());
@@ -274,6 +277,13 @@ public class KetQuaGUI extends JPanel {
 		btnAdd.setFont(sgUI13b);
 		btnAdd.setFocusPainted(false);
 		btnAdd.setBorderPainted(false);
+		
+		ImageIcon tkIcon = new ImageIcon(new ImageIcon(getClass().getResource("/GUI/assets/statistic.png")).getImage()
+				.getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+		btnThongKe.setIcon(tkIcon);
+		btnThongKe.setFont(sgUI13b);
+		btnThongKe.setFocusPainted(false);
+		btnThongKe.setBorderPainted(false);
 
 		ImageIcon cancelIcon = new ImageIcon(new ImageIcon(getClass().getResource("/GUI/assets/cancel-144.png"))
 				.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
@@ -318,6 +328,7 @@ public class KetQuaGUI extends JPanel {
 		this.setBackground(Color.white);
 
 		btnAdd.setBackground(Color.decode("#ebf2fc"));
+		btnThongKe.setBackground(Color.decode("#ebf2fc"));
 		btnCancel.setBackground(Color.decode("#ebf2fc"));
 		btnDelete.setBackground(Color.decode("#ebf2fc"));
 		btnRefresh.setBackground(Color.decode(colorTableCode));
@@ -340,6 +351,7 @@ public class KetQuaGUI extends JPanel {
 		eventRemove();
 		eventSearch();
 		eventCancel();
+		eventStatistic();
 //		eventRefresh();
 	}
 
@@ -545,6 +557,16 @@ public class KetQuaGUI extends JPanel {
 				String fullname = tbMain.getValueAt(row, 2).toString();
 				KetQuaBUS.getInstance().cancel(courseid, fullname);
 				renderData(tbMain);
+			}
+		});
+	}
+	public void eventStatistic() {
+		btnThongKe.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				new ThongKeFORM();
 			}
 		});
 	}

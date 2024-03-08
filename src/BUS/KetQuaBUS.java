@@ -61,4 +61,38 @@ public class KetQuaBUS {
 		return check;
 		
 	}
+	public ArrayList<Integer> listCountGrade(){
+		ArrayList<Integer> list=new ArrayList<>();
+		int countA=0;
+		int countB=0;
+		int countC=0;
+		int countD=0;
+		int countF=0;
+		for (float grade : KetQuaDAO.getInstance().getListGrade()) {
+			if (grade==4) {
+				countA++;
+			}
+			else if(grade>3&&grade<4) {
+				countB++;
+			}
+			else if(grade>=3&&grade<4) {
+				countB++;
+			}
+			else if(grade>=2&&grade<3) {
+				countC++;
+			}
+			else if(grade>=1&&grade<2) {
+				countD++;
+			}
+			else {
+				countF++;
+			}
+		}
+		list.add(countA);
+		list.add(countB);
+		list.add(countC);
+		list.add(countD);
+		list.add(countF);
+		return list;
+	}
 }
