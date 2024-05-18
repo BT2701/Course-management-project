@@ -1,4 +1,4 @@
-# Sale Sphere Website Project
+# Course Management
 
 ## Introduction
 - The first project in a series of three course projects on building software using the layered architecture model.
@@ -30,11 +30,8 @@
     ```
 2. Import Database
    `Open file SaleSphere/DATABASE/school.sql in PhpMyAdmin (or other tool) and run file`
-3. Navigate to the project directory:
-    ```sh
-    cd SaleSphere
-    ```
-4. Open project with localhost:
+
+3. Run project
     `run ../src/GUI/GUI_BASIC/mainGUI.java`
 
 
